@@ -4,9 +4,16 @@
     "baseUrl": ".",
     "module": "ESNext",
     "jsx": "react-jsx",
+     "forceConsistentCasingInFileNames": false,  
+    "skipLibCheck": true, 
     "paths": {
       "~/*": ["./*"]
     }
   },
-  "include": ["./**/*.ts", "./**/*.tsx"]
+  "include": ["./**/*.ts", "./**/*.tsx"],
+   "exclude": [                                
+    "node_modules",
+    "dist",
+    "build"
+  ]
 }
