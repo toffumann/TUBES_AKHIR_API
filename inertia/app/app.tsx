@@ -1,22 +1,19 @@
-/// <reference path="../../adonisrc.ts" />
-/// <reference path="../../config/inertia.ts" />
-
-import '../css/app.css'
-import { createRoot } from 'react-dom/client'
+// inertia/app/app.tsx
+import '../css/app.css'  // ← PERUBAHAN DI SINI! dari "../css/app.css"
 import { createInertiaApp } from '@inertiajs/react'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
+import { createRoot } from 'react-dom/client'
 
-const appName = import.meta.env.VITE_APP_NAME || 'AdonisJS'
+console.log('🚀 DesainHub starting...')
 
 createInertiaApp({
-  progress: { color: '#5468FF' },
-
-  title: (title) => `${title} - ${appName}`,
-
+  title: (title) => title ? `${title} - DesainHub` : 'DesainHub',
   resolve: (name) => {
-    return resolvePageComponent(`../pages/${name}.tsx`, import.meta.glob('../pages/**/*.tsx'))
+    return resolvePageComponent(
+      `./pages/${name}.tsx`,
+      import.meta.glob('./pages/**/*.tsx')
+    )
   },
-
   setup({ el, App, props }) {
     createRoot(el).render(<App {...props} />)
   },

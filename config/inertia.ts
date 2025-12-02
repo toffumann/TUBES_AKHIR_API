@@ -1,7 +1,8 @@
+// config/inertia.ts
 import { defineConfig } from '@adonisjs/inertia'
-import type { InferSharedProps } from '@adonisjs/inertia/types'
+import type { HttpContext } from '@adonisjs/core/http'
 
-const inertiaConfig = defineConfig({
+export default defineConfig({
   /**
    * Path to the Edge view that will be used as the root view for Inertia responses
    */
@@ -11,7 +12,11 @@ const inertiaConfig = defineConfig({
    * Data that should be shared with all rendered pages
    */
   sharedData: {
-    // user: (ctx) => ctx.inertia.always(() => ctx.auth.user),
+    errors: (ctx: HttpContext) => ctx.session.flashMessages.get('errors') || {},
+    success: (ctx: HttpContext) => ctx.session.flashMessages.get('success') || '',
+    auth: {
+      user: (ctx: HttpContext) => ctx.session.get('user') || null
+    }
   },
 
   /**
@@ -19,12 +24,6 @@ const inertiaConfig = defineConfig({
    */
   ssr: {
     enabled: false,
-    entrypoint: 'inertia/app/ssr.tsx',
-  },
+    bundle: 'inertia/app/ssr'
+  }
 })
-
-export default inertiaConfig
-
-declare module '@adonisjs/inertia/types' {
-  export interface SharedProps extends InferSharedProps<typeof inertiaConfig> {}
-}
