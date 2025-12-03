@@ -2,7 +2,7 @@ import { Link } from '@inertiajs/react'
 
 export default function Navbar() {
   const menuItems = [
-    { label: 'Fitur', href: '/fitur' },
+    { label: 'Portofolio', href: '/portofolio' },
     { label: 'Layanan', href: '/layanan' },
   ]
 

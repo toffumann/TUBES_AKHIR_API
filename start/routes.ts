@@ -23,3 +23,24 @@ router.get('/layanan', async ({ inertia }) => {
   
   return inertia.render('Services/Index', { services })
 })
+
+router.get('/checkout', async ({ inertia, request }) => {
+  // Ambil parameter dari URL
+  const serviceId = request.input('service_id')
+  const namaService = request.input('nama_service')
+  const harga = request.input('harga')
+  
+  console.log('Checkout accessed with:', { serviceId, namaService, harga })
+  
+  return inertia.render('Services/Show', {
+    queryParams: {
+      service_id: serviceId,
+      nama_service: namaService,
+      harga: harga
+    }
+  })
+})
+
+router.get('/order-confirmation', async ({ inertia }) => {
+  return inertia.render('Services/Confirm')
+})
