@@ -7,7 +7,7 @@ export default class Services extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
-  @column()
+  @column({columnName: 'nama_layanan'})
   declare namaService: string
 
   @column()
