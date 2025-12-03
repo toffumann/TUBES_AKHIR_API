@@ -18,7 +18,7 @@ router.post('/login', [UserAuthsController, 'Login'])
 router.post('/logout', [UserAuthsController, 'Logout'])
 
 router.get('/', async ({ inertia }) => {
-  return inertia.render('Home')
+  return inertia.render('dashboard')
 })
 
 router.get('/login', async ({ inertia }) => {

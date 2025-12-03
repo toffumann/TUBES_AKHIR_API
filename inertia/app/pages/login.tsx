@@ -231,23 +231,6 @@ export default function Login() {
                 {processing ? 'Memproses...' : 'Masuk'}
               </button>
 
-              {/* Demo Credentials */}
-              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                <p className="text-sm text-blue-800 font-medium mb-2">
-                  🎯 Akun Demo (Testing):
-                </p>
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div>
-                    <span className="font-medium">Email:</span>
-                    <p className="text-blue-700">designer@example.com</p>
-                  </div>
-                  <div>
-                    <span className="font-medium">Password:</span>
-                    <p className="text-blue-700">password</p>
-                  </div>
-                </div>
-              </div>
-
               {/* Divider */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
