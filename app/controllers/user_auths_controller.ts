@@ -31,7 +31,11 @@ export default class UserAuthsController {
 
     }
 
-    async Logout({auth}: HttpContext){
+    async Logout({auth, response}: HttpContext){
         await auth.use('api').invalidateToken
+
+        return response.status(200).json({
+            message: 'Logout Berhasil',
+        })
     }
 }

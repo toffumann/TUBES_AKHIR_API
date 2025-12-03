@@ -8,7 +8,7 @@ export default class Services extends BaseModel {
   declare id: number
 
   @column()
-  declare nama_service: string
+  declare namaService: string
 
   @column()
   declare deskripsi: string | null

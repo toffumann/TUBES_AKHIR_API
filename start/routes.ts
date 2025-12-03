@@ -9,13 +9,25 @@
 
 import router from '@adonisjs/core/services/router'
 import UserAuthsController from '#controllers/user_auths_controller'
+import ServicesController from '#controllers/services_controller'
 import { middleware } from './kernel.js'
+import UserController from '#controllers/users_controller'
 
 //router.on('/').renderInertia('home')
 
 router.post('/register', [UserAuthsController, 'Register'])
 router.post('/login', [UserAuthsController, 'Login'])
 router.post('/logout', [UserAuthsController, 'Logout'])
+
+// ini yang akan di tampilkan ke user
+router.get('/service/product', [ServicesController, 'index']).use(middleware.auth())
+
+//profile user
+router.get('/me', [UserController, 'me']).use(middleware.auth())
+
+// ini untuk admin input service
+router.post('/service',[ServicesController, 'store'])
+
 
 router.get('/', async ({ inertia }) => {
   return inertia.render('dashboard')
@@ -39,3 +51,4 @@ router.get('/dashboard', async ({ inertia }) => {
 router.get('/profile', async ({ inertia }) => {
   return inertia.render('Profile')
 }).use(middleware.auth())
+
