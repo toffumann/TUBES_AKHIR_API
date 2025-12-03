@@ -10,23 +10,22 @@ export default function ServiceShow() {
     files: [] as File[]
   })
 
-  // Mock data untuk single service
+  // Data utama service sesuai model database
   const service = {
     id: 1,
-    name: 'Logo Design Professional',
+    nama_service: 'Logo Design Professional',
+    deskripsi: 'Dapatkan logo yang unik dan memorable untuk brand Anda. Kami akan membuat 3 konsep logo berbeda yang sesuai dengan identitas brand Anda, dilengkapi dengan file vector untuk kebutuhan cetak dan digital.',
+    harga: 2500000,
+    // Data tambahan untuk UI
     slug: 'logo-design-professional',
-    description: 'Dapatkan logo yang unik dan memorable untuk brand Anda. Kami akan membuat 3 konsep logo berbeda yang sesuai dengan identitas brand Anda, dilengkapi dengan file vector untuk kebutuhan cetak dan digital.',
     category: {
       name: 'Logo & Branding',
       slug: 'logo-branding'
     },
-    basePrice: 2500000,
-    discountPrice: 1999000,
     deliveryDays: 7,
     revisionLimit: 3,
     orderCount: 42,
     isPopular: true,
-    imageUrl: 'https://images.unsplash.com/photo-1545235617-9465d2a55698?w=800&h=600&fit=crop',
     features: [
       '3 Konsep logo berbeda yang unik',
       'File vector (AI, EPS, SVG, PDF)',
@@ -73,32 +72,28 @@ export default function ServiceShow() {
   const relatedServices = [
     {
       id: 2,
-      name: 'Brand Identity Package',
+      nama_service: 'Brand Identity Package',
       slug: 'brand-identity-package',
-      description: 'Paket lengkap identitas merek termasuk logo, warna, tipografi, dan panduan penggunaan',
+      deskripsi: 'Paket lengkap identitas merek termasuk logo, warna, tipografi, dan panduan penggunaan',
+      harga: 8000000,
       category: { name: 'Branding', slug: 'branding' },
-      basePrice: 8000000,
-      discountPrice: 6999000,
       deliveryDays: 14,
       revisionLimit: 5,
       orderCount: 28,
       isPopular: true,
-      imageUrl: 'https://images.unsplash.com/photo-1634942537034-2531766767d1?w=800&h=600&fit=crop',
       features: ['Logo', 'Color palette', 'Typography', 'Brand guidelines']
     },
     {
       id: 3,
-      name: 'Social Media Branding',
+      nama_service: 'Social Media Branding',
       slug: 'social-media-branding',
-      description: 'Desain template untuk Instagram, Facebook, dan LinkedIn yang konsisten',
+      deskripsi: 'Desain template untuk Instagram, Facebook, dan LinkedIn yang konsisten',
+      harga: 3500000,
       category: { name: 'Social Media', slug: 'social-media' },
-      basePrice: 3500000,
-      discountPrice: 2999000,
       deliveryDays: 10,
       revisionLimit: 3,
       orderCount: 56,
       isPopular: false,
-      imageUrl: 'https://images.unsplash.com/photo-1611262588024-d12430b98920?w=800&h=600&fit=crop',
       features: ['Instagram template', 'Facebook cover', 'Story design', 'Content plan']
     }
   ]
@@ -114,20 +109,15 @@ export default function ServiceShow() {
     }
   }
 
-  const hasDiscount = service.discountPrice && service.basePrice && service.discountPrice < service.basePrice
-  const discountPercentage = hasDiscount && service.basePrice 
-    ? Math.round((1 - service.discountPrice! / service.basePrice) * 100)
-    : 0
-
   return (
-    <Layout title={service.name}>
+    <Layout title={service.nama_service}>
       <Head>
-        <title>{service.name} - Desain Aja Dulu</title>
-        <meta name="description" content={service.description} />
+        <title>{service.nama_service} - Desain Aja Dulu</title>
+        <meta name="description" content={service.deskripsi} />
       </Head>
 
       {/* Breadcrumb */}
-      <div className="bg-gray-50 py-4 border-b">
+      <div className="bg-gray-50 py-3 border-b">
         <div className="container mx-auto px-4">
           <nav className="flex items-center text-sm text-gray-600">
             <a href="/" className="hover:text-purple-600">Beranda</a>
@@ -138,7 +128,7 @@ export default function ServiceShow() {
               {service.category.name}
             </a>
             <span className="mx-2">›</span>
-            <span className="text-gray-900 font-medium">{service.name}</span>
+            <span className="text-gray-900 font-medium">{service.nama_service}</span>
           </nav>
         </div>
       </div>
@@ -146,121 +136,87 @@ export default function ServiceShow() {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column: Service Details */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 space-y-6">
             {/* Service Header */}
-            <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-              <div className="flex flex-col md:flex-row gap-8">
-                {/* Image */}
-                <div className="md:w-2/5">
-                  <div className="aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
-                    {service.imageUrl ? (
-                      <img 
-                        src={service.imageUrl} 
-                        alt={service.name}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <span className="text-6xl text-gray-400">🎨</span>
-                      </div>
-                    )}
+            <div className="bg-white rounded-lg border p-6">
+              <div className="mb-4">
+                <span className="text-sm font-medium text-purple-600 bg-purple-50 px-3 py-1 rounded-full">
+                  {service.category.name}
+                </span>
+              </div>
+              
+              <h1 className="text-2xl font-bold text-gray-900 mb-3">{service.nama_service}</h1>
+              <p className="text-gray-600 mb-6">{service.deskripsi}</p>
+
+              {/* Badges */}
+              <div className="flex flex-wrap gap-2 mb-6">
+                {service.isPopular && (
+                  <span className="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full">
+                    🔥 POPULAR
+                  </span>
+                )}
+                <span className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full">
+                  ⏱️ {service.deliveryDays} hari
+                </span>
+                <span className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full">
+                  ✏️ {service.revisionLimit}x revisi
+                </span>
+                <span className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full">
+                  📊 {service.orderCount} pesanan
+                </span>
+              </div>
+
+              {/* Price */}
+              <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-gray-900 mb-2">
+                    Rp {service.harga.toLocaleString('id-ID')}
                   </div>
-                  
-                  {/* Badges */}
-                  <div className="flex flex-wrap gap-2 mt-4">
-                    {service.isPopular && (
-                      <span className="px-3 py-1 bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs font-bold rounded-full">
-                        🔥 POPULAR
-                      </span>
-                    )}
-                    <span className="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded-full">
-                      ⏱️ {service.deliveryDays} hari pengerjaan
-                    </span>
-                    <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
-                      ✏️ {service.revisionLimit}x revisi
-                    </span>
-                    <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
-                      📊 {service.orderCount} pesanan
-                    </span>
-                  </div>
+                  <p className="text-gray-500 text-sm">DP 50% diawal, pelunasan setelah desain selesai</p>
                 </div>
+              </div>
 
-                {/* Details */}
-                <div className="md:w-3/5">
-                  <div className="mb-4">
-                    <span className="text-sm font-medium text-purple-600 bg-purple-50 px-3 py-1 rounded-full">
-                      {service.category.name}
-                    </span>
-                  </div>
-                  
-                  <h1 className="text-3xl font-bold text-gray-900 mb-4">{service.name}</h1>
-                  <p className="text-gray-600 text-lg mb-6">{service.description}</p>
-
-                  {/* Price */}
-                  <div className="mb-6">
-                    {hasDiscount ? (
-                      <div className="flex items-center flex-wrap gap-3">
-                        <span className="text-4xl font-bold text-gray-900">
-                          Rp {service.discountPrice!.toLocaleString('id-ID')}
-                        </span>
-                        <span className="text-2xl text-gray-500 line-through">
-                          Rp {service.basePrice!.toLocaleString('id-ID')}
-                        </span>
-                        <span className="text-lg font-bold text-white bg-red-500 px-3 py-1.5 rounded-full">
-                          Hemat {discountPercentage}%
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-4xl font-bold text-gray-900">
-                        Rp {service.basePrice!.toLocaleString('id-ID')}
-                      </span>
-                    )}
-                    <p className="text-gray-500 text-sm mt-2">*DP 50% diawal, pelunasan setelah desain selesai</p>
-                  </div>
-
-                  {/* Stats */}
-                  <div className="grid grid-cols-3 gap-4 mb-6">
-                    <div className="text-center p-3 bg-gray-50 rounded-lg">
-                      <div className="text-lg font-bold text-purple-600">{service.revisionLimit}x</div>
-                      <div className="text-sm text-gray-600">Revisi</div>
-                    </div>
-                    <div className="text-center p-3 bg-gray-50 rounded-lg">
-                      <div className="text-lg font-bold text-purple-600">{service.orderCount}+</div>
-                      <div className="text-sm text-gray-600">Pesanan</div>
-                    </div>
-                    <div className="text-center p-3 bg-gray-50 rounded-lg">
-                      <div className="text-lg font-bold text-purple-600">98%</div>
-                      <div className="text-sm text-gray-600">Kepuasan</div>
-                    </div>
-                  </div>
+              {/* Stats */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="text-center p-3 bg-white border rounded-lg">
+                  <div className="text-lg font-bold text-purple-600">{service.revisionLimit}x</div>
+                  <div className="text-xs text-gray-600">Revisi</div>
+                </div>
+                <div className="text-center p-3 bg-white border rounded-lg">
+                  <div className="text-lg font-bold text-purple-600">{service.orderCount}+</div>
+                  <div className="text-xs text-gray-600">Pesanan</div>
+                </div>
+                <div className="text-center p-3 bg-white border rounded-lg">
+                  <div className="text-lg font-bold text-purple-600">98%</div>
+                  <div className="text-xs text-gray-600">Kepuasan</div>
                 </div>
               </div>
             </div>
 
             {/* Features */}
-            <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-              <h2 className="text-2xl font-bold mb-6">Apa yang Anda Dapatkan</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-white rounded-lg border p-6">
+              <h2 className="text-xl font-bold mb-4">Apa yang Anda Dapatkan</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {service.features.map((feature, idx) => (
                   <div key={idx} className="flex items-start">
-                    <span className="text-green-500 mr-3 mt-1 text-lg">✓</span>
-                    <span className="text-gray-700">{feature}</span>
+                    <span className="text-green-500 mr-2 mt-0.5">✓</span>
+                    <span className="text-gray-700 text-sm">{feature}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Process Timeline */}
-            <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-              <h2 className="text-2xl font-bold mb-6">Proses Pengerjaan</h2>
-              <div className="space-y-6">
+            <div className="bg-white rounded-lg border p-6">
+              <h2 className="text-xl font-bold mb-4">Proses Pengerjaan</h2>
+              <div className="space-y-4">
                 {service.process.map((step, idx) => (
                   <div key={idx} className="flex items-start">
-                    <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center text-white font-bold mr-4">
+                    <div className="flex-shrink-0 w-6 h-6 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center text-xs font-bold mr-3 mt-0.5">
                       {step.step}
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">{step.title}</h3>
+                      <h3 className="font-medium text-gray-900">{step.title}</h3>
                       <p className="text-gray-600 text-sm">{step.description}</p>
                     </div>
                   </div>
@@ -270,13 +226,13 @@ export default function ServiceShow() {
 
             {/* FAQ */}
             {service.faq.length > 0 && (
-              <div className="bg-white rounded-2xl shadow-lg p-8">
-                <h2 className="text-2xl font-bold mb-6">Pertanyaan Umum</h2>
-                <div className="space-y-6">
+              <div className="bg-white rounded-lg border p-6">
+                <h2 className="text-xl font-bold mb-4">Pertanyaan Umum</h2>
+                <div className="space-y-5">
                   {service.faq.map((item, idx) => (
-                    <div key={idx} className="border-b pb-6 last:border-0">
-                      <h3 className="font-semibold text-gray-900 mb-2 text-lg">{item.question}</h3>
-                      <p className="text-gray-600">{item.answer}</p>
+                    <div key={idx} className="border-b pb-5 last:border-0 last:pb-0">
+                      <h3 className="font-medium text-gray-900 mb-1.5">{item.question}</h3>
+                      <p className="text-gray-600 text-sm">{item.answer}</p>
                     </div>
                   ))}
                 </div>
@@ -286,9 +242,9 @@ export default function ServiceShow() {
 
           {/* Right Column: Order Form */}
           <div className="lg:col-span-1">
-            <div className="sticky top-8">
-              <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                <h2 className="text-xl font-bold mb-6">Pesan Layanan Ini</h2>
+            <div className="sticky top-6">
+              <div className="bg-white rounded-lg border p-5">
+                <h2 className="text-lg font-bold mb-5">Pesan Layanan Ini</h2>
                 
                 <form onSubmit={handleSubmit}>
                   <div className="mb-4">
@@ -296,8 +252,8 @@ export default function ServiceShow() {
                     <textarea
                       value={orderData.requirements}
                       onChange={(e) => setOrderData({...orderData, requirements: e.target.value})}
-                      className="w-full p-3 border rounded-lg h-32 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      placeholder="Jelaskan kebutuhan desain Anda secara detail..."
+                      className="w-full p-3 border rounded-lg h-32 focus:ring-1 focus:ring-purple-500 focus:border-purple-500"
+                      placeholder="Jelaskan kebutuhan desain Anda..."
                       required
                     />
                   </div>
@@ -307,7 +263,7 @@ export default function ServiceShow() {
                     <select
                       value={orderData.timeline}
                       onChange={(e) => setOrderData({...orderData, timeline: e.target.value})}
-                      className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full p-3 border rounded-lg focus:ring-1 focus:ring-purple-500 focus:border-purple-500"
                     >
                       <option value="standard">Standard ({service.deliveryDays} hari)</option>
                       <option value="express">Express (3 hari) + Rp 500.000</option>
@@ -317,10 +273,10 @@ export default function ServiceShow() {
 
                   <div className="mb-6">
                     <label className="block text-sm font-medium mb-2">File Referensi (Opsional)</label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-purple-400 transition cursor-pointer">
-                      <div className="text-3xl mb-2">📎</div>
-                      <p className="text-gray-600 mb-1">Drag & drop file atau klik untuk upload</p>
-                      <p className="text-gray-500 text-sm">Max. 10MB per file</p>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-purple-400 transition cursor-pointer">
+                      <div className="text-2xl mb-2">📎</div>
+                      <p className="text-gray-600 text-sm mb-1">Klik untuk upload file</p>
+                      <p className="text-gray-500 text-xs">Max. 10MB per file</p>
                       <input 
                         type="file" 
                         multiple 
@@ -328,13 +284,13 @@ export default function ServiceShow() {
                         className="hidden"
                         id="file-upload"
                       />
-                      <label htmlFor="file-upload" className="inline-block mt-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 cursor-pointer">
+                      <label htmlFor="file-upload" className="inline-block mt-2 px-3 py-1.5 bg-gray-100 text-gray-700 rounded text-xs hover:bg-gray-200 cursor-pointer">
                         Pilih File
                       </label>
                     </div>
                     {orderData.files.length > 0 && (
                       <div className="mt-2">
-                        <p className="text-sm text-gray-600">{orderData.files.length} file terpilih</p>
+                        <p className="text-xs text-gray-600">{orderData.files.length} file terpilih</p>
                       </div>
                     )}
                   </div>
@@ -344,16 +300,7 @@ export default function ServiceShow() {
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-gray-600">Harga Layanan</span>
                       <span className="font-semibold">
-                        {hasDiscount ? (
-                          <>
-                            <span className="line-through text-gray-500 text-sm mr-2">
-                              Rp {service.basePrice!.toLocaleString('id-ID')}
-                            </span>
-                            <span>Rp {service.discountPrice!.toLocaleString('id-ID')}</span>
-                          </>
-                        ) : (
-                          <span>Rp {service.basePrice!.toLocaleString('id-ID')}</span>
-                        )}
+                        Rp {service.harga.toLocaleString('id-ID')}
                       </span>
                     </div>
                     {orderData.timeline === 'express' && (
@@ -365,9 +312,9 @@ export default function ServiceShow() {
                     <div className="border-t pt-2 mt-2">
                       <div className="flex justify-between items-center">
                         <span className="font-bold">Total</span>
-                        <span className="text-2xl font-bold text-purple-600">
+                        <span className="text-xl font-bold text-purple-600">
                           Rp {
-                            (service.discountPrice || service.basePrice || 0 + 
+                            (service.harga + 
                             (orderData.timeline === 'express' ? 500000 : 0)
                             ).toLocaleString('id-ID')
                           }
@@ -378,19 +325,19 @@ export default function ServiceShow() {
 
                   <button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+                    className="w-full bg-purple-600 text-white py-3 rounded-lg font-medium hover:bg-purple-700 transition-colors"
                   >
                     Pesan Sekarang
                   </button>
                 </form>
 
                 {/* Info Box */}
-                <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                <div className="mt-6 p-3 bg-blue-50 rounded border border-blue-100">
                   <div className="flex items-start">
-                    <span className="text-blue-500 mr-2 text-lg">ℹ️</span>
+                    <span className="text-blue-500 mr-2">ℹ️</span>
                     <div>
                       <p className="text-sm text-blue-700 font-medium mb-1">Proses setelah pemesanan:</p>
-                      <ul className="text-xs text-blue-600 space-y-1">
+                      <ul className="text-xs text-blue-600 space-y-0.5">
                         <li>1. Konfirmasi order dalam 1x24 jam</li>
                         <li>2. Pembayaran DP 50% untuk mulai pengerjaan</li>
                         <li>3. Progress update melalui dashboard</li>
@@ -406,9 +353,9 @@ export default function ServiceShow() {
 
         {/* Related Services */}
         {relatedServices.length > 0 && (
-          <div className="mt-16">
-            <h2 className="text-2xl font-bold mb-8">Layanan Serupa</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+          <div className="mt-12">
+            <h2 className="text-xl font-bold mb-6">Layanan Serupa</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {relatedServices.map((relatedService) => (
                 <ServiceCard key={relatedService.id} service={relatedService} />
               ))}
