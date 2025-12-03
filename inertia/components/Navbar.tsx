@@ -3,7 +3,7 @@ import { Link } from '@inertiajs/react'
 export default function Navbar() {
   const menuItems = [
     { label: 'Fitur', href: '/fitur' },
-    { label: 'Layayan', href: '/layanan' },
+    { label: 'Layanan', href: '/layanan' },
   ]
 
   return (
