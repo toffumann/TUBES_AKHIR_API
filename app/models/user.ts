@@ -24,7 +24,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare password: string
 
   @column()
-  declare nomorTelepon: number | null
+  declare nomorTelepon: string | null
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
