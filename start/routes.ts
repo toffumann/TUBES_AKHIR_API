@@ -12,7 +12,7 @@ import UserAuthsController from '#controllers/user_auths_controller'
 import ServicesController from '#controllers/services_controller'
 import { middleware } from './kernel.js'
 import UserController from '#controllers/users_controller'
-
+import DashboardController from '#controllers/dashboard_controller'
 //router.on('/').renderInertia('home')
 
 router.post('/register', [UserAuthsController, 'Register'])
@@ -44,11 +44,19 @@ router.get('/register', async ({ inertia }) => {
 
 
 // Protected routes
-router.get('/dashboard', async ({ inertia }) => {
-  return inertia.render('Dashboard')
-}).use(middleware.auth())  // ← Gunakan middleware auth
+router.group(() => {
+    // Dashboard
+    router.get('/dashboard', [DashboardController, 'index'])
+    router.get('/api/dashboard', [DashboardController, 'api'])
+    
+    // Services
 
-router.get('/profile', async ({ inertia }) => {
-  return inertia.render('Profile')
+    
+    // Profile
+    router.get('/profile', async ({ inertia }) => {
+        return inertia.render('profile')
+    })
+    
+    // Admin routes (input service)
+    router.post('/service', [ServicesController, 'store'])
 }).use(middleware.auth())
-

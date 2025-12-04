@@ -12,55 +12,59 @@ export default function Login() {
   const [processing, setProcessing] = useState(false)
   const [errors, setErrors] = useState<{email?: string, password?: string, general?: string}>({})
 
-  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setProcessing(true)
-    setErrors({})
-    
-    try {
-      // Kirim request ke backend
-      const response = await fetch('/login', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          email: email,
-          password: password
-        })
+  // inertia/app/pages/login.tsx - Di bagian submit function
+const submit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault()
+  setProcessing(true)
+  setErrors({})
+  
+  try {
+    const response = await fetch('/login', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        email: email,
+        password: password
       })
-      
-      const result = await response.json()
-      
-      if (response.ok) {
-        // Simpan token dari response
-        localStorage.setItem('auth_token', result.token)
-        
-        if (result.expires_in) {
-          localStorage.setItem('token_expires', result.expires_in)
-        }
-        
-        // Redirect ke dashboard
-        window.location.href = '/dashboard'
-      } else {
-        // Handle error dari backend
-        if (result.errors) {
-          setErrors(result.errors)
-        } else if (result.message) {
-          setErrors({ general: result.message })
-        } else {
-          setErrors({ general: 'Login gagal' })
-        }
-      }
-      
-    } catch (error) {
-      console.error('Network error:', error)
-      setErrors({ general: 'Koneksi error. Coba lagi.' })
-    } finally {
-      setProcessing(false)
-    }
+    })
+    
+    const result = await response.json()
+    
+    if (response.ok) {
+  // 1. Simpan token ke localStorage
+  localStorage.setItem('auth_token', result.token)
+  localStorage.setItem('token_type', result.type || 'Bearer')
+  
+  if (result.expires_in) {
+    localStorage.setItem('token_expires', result.expires_in)
   }
+  
+  console.log('✅ Token saved:', result.token.substring(0, 20) + '...')
+  console.log('🔗 Redirecting to dashboard with token...')
+  
+  // 2. Redirect ke dashboard DENGAN TOKEN di URL
+  window.location.href = `/dashboard?token=${encodeURIComponent(result.token)}`
+}
+    else {
+      if (result.errors) {
+        setErrors(result.errors)
+      } else if (result.message) {
+        setErrors({ general: result.message })
+      } else {
+        setErrors({ general: 'Login gagal' })
+      }
+    }
+    
+  } catch (error) {
+    console.error('Network error:', error)
+    setErrors({ general: 'Koneksi error. Coba lagi.' })
+  } finally {
+    setProcessing(false)
+  }
+}
 
   // Handler functions
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
