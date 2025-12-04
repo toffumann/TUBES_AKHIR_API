@@ -48,7 +48,7 @@ export default class ProjectController {
   /**
    * GET /projects/:id
    * Detail project user login
-   */
+   
   async show({ params, auth, response }: HttpContext) {
     await auth.authenticate()
 
@@ -73,7 +73,7 @@ export default class ProjectController {
   /**
    * PATCH /projects/:id
    * User update catatan atau status (opsional)
-   */
+   
   async update({ params, request, auth, response }: HttpContext) {
     await auth.authenticate()
 
@@ -99,5 +99,5 @@ export default class ProjectController {
       message: 'Project berhasil diperbarui',
       data: project,
     }
-  }
+  }*/
 }
