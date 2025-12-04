@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
+import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import User from './user.js'
 import Services from './services.js'
@@ -9,24 +9,36 @@ export default class Projects extends BaseModel {
   declare id: number
 
   @column()
-  declare id_user: number
+  declare userId: number
+
+  @column({columnName: 'service_id'})
+  declare serviceId: number
 
   @column()
-  declare id_service: number
+  declare catatanUser: string | null
 
   @column()
-  declare catatan_user: string | null
-
-  @column()
-  declare status_project: 'Baru' | 'Proses' | 'Revisi' | 'Selesai' | 'batal'
+  declare statusProject: 'Baru' | 'Proses' | 'Revisi' | 'Selesai' | 'Batal'
 
   @column.date()
-  declare tanggal_mulai: DateTime
+  declare deadline: DateTime
 
-  @belongsTo(() => User, { foreignKey: 'id_user' })
+  // MIDTRANS
+  @column()
+  declare orderId: string | null
+
+  @column()
+  declare paymentStatus: string
+
+  @column()
+  declare snapToken: string | null
+
+  @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
 
-  @belongsTo(() => Services, { foreignKey: 'id_service' })
+  @belongsTo(() => Services, {
+    foreignKey: 'serviceId',
+  })
   declare service: BelongsTo<typeof Services>
 
   @column.dateTime({ autoCreate: true })

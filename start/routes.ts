@@ -12,12 +12,18 @@ import UserAuthsController from '#controllers/user_auths_controller'
 import ServicesController from '#controllers/services_controller'
 import { middleware } from './kernel.js'
 import UserController from '#controllers/users_controller'
+import PaymentController from '#controllers/payments_controller'
+import ProjectController from '#controllers/projects_controller'
 
 //router.on('/').renderInertia('home')
 
 router.post('/register', [UserAuthsController, 'Register'])
 router.post('/login', [UserAuthsController, 'Login'])
 router.post('/logout', [UserAuthsController, 'Logout'])
+
+router.post('/payment/:id', [PaymentController, 'create'])
+
+router.post('/project', [ProjectController, 'store'])
 
 // ini yang akan di tampilkan ke user
 router.get('/service/product', [ServicesController, 'index']).use(middleware.auth())

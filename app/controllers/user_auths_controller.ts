@@ -18,9 +18,9 @@ export default class UserAuthsController {
     async Login({request, response}: HttpContext){
         const payload = await loginValidator.validate(request.all())
         const user = await User.verifyCredentials(payload.email, payload.password)
-        const token = await User.accessTokens.create(user,['*'] ,{
-            expiresIn: '3 hours'
-        }) 
+        const token = await User.accessTokens.create(user,['*'],{
+            expiresIn: '3hours',
+        })
 
         return response.status(200).json({
             message: 'Login Berhasil',
