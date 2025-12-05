@@ -13,6 +13,9 @@ const authConfig = defineConfig({
     }),
   },
 })
+export function getToken() {
+  return localStorage.getItem('auth_token')
+}
 
 export default authConfig
 

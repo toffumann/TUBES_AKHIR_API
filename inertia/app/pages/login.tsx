@@ -13,57 +13,58 @@ export default function Login() {
   const [errors, setErrors] = useState<{email?: string, password?: string, general?: string}>({})
 
   // inertia/app/pages/login.tsx - Di bagian submit function
+// Di fungsi submit Login.tsx
 const submit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault()
-  setProcessing(true)
-  setErrors({})
-  
-  try {
-    const response = await fetch('/login', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({
-        email: email,
-        password: password
-      })
-    })
+    e.preventDefault()
+    setProcessing(true)
     
-    const result = await response.json()
-    
-    if (response.ok) {
-  // 1. Simpan token ke localStorage
-  localStorage.setItem('auth_token', result.token)
-  localStorage.setItem('token_type', result.type || 'Bearer')
-  
-  if (result.expires_in) {
-    localStorage.setItem('token_expires', result.expires_in)
-  }
-  
-  console.log('✅ Token saved:', result.token.substring(0, 20) + '...')
-  console.log('🔗 Redirecting to dashboard with token...')
-  
-  // 2. Redirect ke dashboard DENGAN TOKEN di URL
-  window.location.href = `/dashboard?token=${encodeURIComponent(result.token)}`
-}
-    else {
-      if (result.errors) {
-        setErrors(result.errors)
-      } else if (result.message) {
-        setErrors({ general: result.message })
-      } else {
-        setErrors({ general: 'Login gagal' })
-      }
+    try {
+        const response = await fetch('/login', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        })
+        
+        const result = await response.json()
+        
+        if (response.ok) {
+            // 1. Simpan token dan user ke localStorage
+            localStorage.setItem('auth_token', result.token)
+            localStorage.setItem('auth_user', JSON.stringify(result.user))
+            
+            // 2. Setup fetch interceptor
+            const originalFetch = window.fetch
+            window.fetch = async function(url, options = {}) {
+                const token = localStorage.getItem('auth_token')
+                
+                if (token && typeof url === 'string' && url.startsWith('/')) {
+                    const headers = new Headers(options.headers || {})
+                    headers.set('Authorization', `Bearer ${token}`)
+                    headers.set('Accept', 'application/json')
+                    headers.set('Content-Type', 'application/json')
+                    return originalFetch(url, { ...options, headers })
+                }
+                
+                return originalFetch(url, options)
+            }
+            
+            console.log('✅ Login sukses')
+            
+            // 3. Redirect ke dashboard
+            window.location.href = '/dashboard'
+            
+        } else {
+            setErrors({ general: result.message || 'Login gagal' })
+        }
+        
+    } catch (error) {
+        setErrors({ general: 'Server error' })
+    } finally {
+        setProcessing(false)
     }
-    
-  } catch (error) {
-    console.error('Network error:', error)
-    setErrors({ general: 'Koneksi error. Coba lagi.' })
-  } finally {
-    setProcessing(false)
-  }
 }
 
   // Handler functions
