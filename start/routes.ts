@@ -15,15 +15,16 @@ import UserController from '#controllers/users_controller'
 import PaymentController from '#controllers/payments_controller'
 import ProjectController from '#controllers/projects_controller'
 
+
 //router.on('/').renderInertia('home')
 
 router.post('/register', [UserAuthsController, 'Register'])
 router.post('/login', [UserAuthsController, 'Login'])
 router.post('/logout', [UserAuthsController, 'Logout'])
 
-router.post('/payment/:id', [PaymentController, 'create'])
+router.post('/payment/:id', [PaymentController, 'create']).use(middleware.auth())
 
-router.post('/project', [ProjectController, 'store'])
+router.post('/project', [ProjectController, 'store']).use(middleware.auth())
 
 // ini yang akan di tampilkan ke user
 router.get('/service/product', [ServicesController, 'index']).use(middleware.auth())
@@ -32,11 +33,10 @@ router.get('/service/product', [ServicesController, 'index']).use(middleware.aut
 router.get('/me', [UserController, 'me']).use(middleware.auth())
 
 // ini untuk admin input service
-router.post('/service',[ServicesController, 'store'])
-
+router.post('/service',[ServicesController, 'store']).use(middleware.auth())
 
 router.get('/', async ({ inertia }) => {
-  return inertia.render('Home')
+  return inertia.render('home')
 })
 
 router.get('/login', async ({ inertia }) => {
@@ -47,7 +47,9 @@ router.get('/register', async ({ inertia }) => {
   return inertia.render('register')
 })
 
-
+router.get('/logout', async ({inertia}) => {
+  return inertia.render('logout')
+})
 
 // Protected routes
 router.get('/dashboard', async ({ inertia }) => {

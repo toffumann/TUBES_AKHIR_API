@@ -18,11 +18,11 @@ export default class UserAuthsController {
     async Login({request, response}: HttpContext){
         const payload = await loginValidator.validate(request.all())
         const user = await User.verifyCredentials(payload.email, payload.password)
-        const token = await User.accessTokens.create(user,['*'],{
+        const token = await User.accessTokens.create(user, ['*'],{
             expiresIn: '3hours',
         })
 
-        return response.status(200).json({
+        return response.json({
             message: 'Login Berhasil',
             token: token.value,
             type: 'Bearer',
@@ -34,7 +34,7 @@ export default class UserAuthsController {
     async Logout({auth, response}: HttpContext){
         await auth.use('api').invalidateToken
 
-        return response.status(200).json({
+        return response.json({
             message: 'Logout Berhasil',
         })
     }
