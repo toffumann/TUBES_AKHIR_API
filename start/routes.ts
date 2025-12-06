@@ -26,7 +26,7 @@ router.post('/service', [ServicesController, 'store']) // Admin only
 
 // Inertia Page Routes (GET)
 router.get('/', async ({ inertia }) => {
-  return inertia.render('dashboard')   // atau 'dashboard' sesuai kebutuhan
+  return inertia.render('home')   // atau 'dashboard' sesuai kebutuhan
 }).use
 
 router.get('/login', async ({ inertia }) => {
