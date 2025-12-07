@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { Head, Link } from '@inertiajs/react' // HAPUS useForm
+import { Head, Link, router } from '@inertiajs/react' // HAPUS useForm
 import { Mail, Lock, Eye, EyeOff, Palette, ArrowRight } from 'lucide-react'
+
 
 // HAPUS interface LoginFormData, kita pakai state biasa
 
@@ -12,55 +13,48 @@ export default function Login() {
   const [processing, setProcessing] = useState(false)
   const [errors, setErrors] = useState<{email?: string, password?: string, general?: string}>({})
 
-  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
+const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setProcessing(true)
-    setErrors({})
     
     try {
-      // Kirim request ke backend
-      const response = await fetch('/login', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          email: email,
-          password: password
+        const response = await fetch('/login', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
         })
-      })
-      
-      const result = await response.json()
-      
-      if (response.ok) {
-        // Simpan token dari response
-        localStorage.setItem('auth_token', result.token)
         
-        if (result.expires_in) {
-          localStorage.setItem('token_expires', result.expires_in)
-        }
+        const result = await response.json()
+        console.log("HASIL LOGIN:", result)
+        console.log("TOKEN:", result.token)
+
         
-        // Redirect ke dashboard
-        window.location.href = '/dashboard'
-      } else {
-        // Handle error dari backend
-        if (result.errors) {
-          setErrors(result.errors)
-        } else if (result.message) {
-          setErrors({ general: result.message })
+        if (response.ok) {
+
+            // 1. SIMPAN TOKEN YANG BENAR
+            localStorage.setItem('auth_token', result.token)  // <- token yg benar
+            console.log(result.token)
+            localStorage.setItem('auth_user', JSON.stringify(result.user))
+
+            console.log('Login sukses')
+
+            // 3. Redirect
+            router.visit('/dashboard')
+            
         } else {
-          setErrors({ general: 'Login gagal' })
+            setErrors({ general: result.message || 'Login gagal' })
         }
-      }
-      
+        
     } catch (error) {
-      console.error('Network error:', error)
-      setErrors({ general: 'Koneksi error. Coba lagi.' })
+        setErrors({ general: 'Server error' })
     } finally {
-      setProcessing(false)
+        setProcessing(false)
     }
-  }
+}
+
 
   // Handler functions
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -230,23 +224,6 @@ export default function Login() {
               >
                 {processing ? 'Memproses...' : 'Masuk'}
               </button>
-
-              {/* Demo Credentials */}
-              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                <p className="text-sm text-blue-800 font-medium mb-2">
-                  🎯 Akun Demo (Testing):
-                </p>
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div>
-                    <span className="font-medium">Email:</span>
-                    <p className="text-blue-700">designer@example.com</p>
-                  </div>
-                  <div>
-                    <span className="font-medium">Password:</span>
-                    <p className="text-blue-700">password</p>
-                  </div>
-                </div>
-              </div>
 
               {/* Divider */}
               <div className="relative">

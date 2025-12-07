@@ -3,7 +3,7 @@ import midtransClient from 'midtrans-client'
 import Projects from '#models/projects'
 
 export default class PaymentController {
-  public async create({ params, auth, response }: HttpContext) {
+  async create({ params, auth, response }: HttpContext) {
     await auth.authenticate()
 
     const project = await Projects.query()

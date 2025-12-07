@@ -14,17 +14,20 @@ import { middleware } from './kernel.js'
 import UserController from '#controllers/users_controller'
 import PaymentController from '#controllers/payments_controller'
 import ProjectController from '#controllers/projects_controller'
+import WebhookController from '#controllers/webhooks_controller'
+import UserDashboardsController from '#controllers/user_dashboards_controller'
 
 
-//router.on('/').renderInertia('home')
-
+// ===== PUBLIC ROUTES =====
+// API Routes
 router.post('/register', [UserAuthsController, 'Register'])
 router.post('/login', [UserAuthsController, 'Login'])
 router.post('/logout', [UserAuthsController, 'Logout'])
 
-router.post('/payment/:id', [PaymentController, 'create']).use(middleware.auth())
+router.post('/payment/:id', [PaymentController, 'create'])
+router.post('/midtrans/webhook', [WebhookController, 'midtrans'])
 
-router.post('/project', [ProjectController, 'store']).use(middleware.auth())
+router.post('/project', [ProjectController, 'store'])
 
 // ini yang akan di tampilkan ke user
 router.get('/service/product', [ServicesController, 'index']).use(middleware.auth())
@@ -33,10 +36,15 @@ router.get('/service/product', [ServicesController, 'index']).use(middleware.aut
 router.get('/me', [UserController, 'me']).use(middleware.auth())
 
 // ini untuk admin input service
-router.post('/service',[ServicesController, 'store']).use(middleware.auth())
+router.post('/service',[ServicesController, 'store'])
+
+router.get('/dashboard/product/:id', [UserDashboardsController, 'show']).use(middleware.auth())
+router.get('/dashboard/project', [UserDashboardsController, 'index']).use(middleware.auth())
+router.put('/dashboard/update/product/:id', [UserDashboardsController, 'update']).use(middleware.auth())
+
 
 router.get('/', async ({ inertia }) => {
-  return inertia.render('home')
+  return inertia.render('Home')
 })
 
 router.get('/login', async ({ inertia }) => {
@@ -47,16 +55,13 @@ router.get('/register', async ({ inertia }) => {
   return inertia.render('register')
 })
 
-router.get('/logout', async ({inertia}) => {
-  return inertia.render('logout')
-})
+
 
 // Protected routes
 router.get('/dashboard', async ({ inertia }) => {
   return inertia.render('Dashboard')
-}).use(middleware.auth())  // ← Gunakan middleware auth
+}).use(middleware.auth({guards: ['api']}))
 
 router.get('/profile', async ({ inertia }) => {
   return inertia.render('Profile')
 }).use(middleware.auth())
-

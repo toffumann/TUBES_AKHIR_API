@@ -12,7 +12,10 @@ export default class UserAuthsController {
                 password: payload.password,
                 nomorTelepon: payload.nomorTelepon
             })
-        return response.redirect('/login')
+
+        return response.status(201).json({
+            message: 'akun berhasil dibuat',
+        })
     }
 
     async Login({request, response}: HttpContext){
@@ -22,11 +25,12 @@ export default class UserAuthsController {
             expiresIn: '3hours',
         })
 
-        return response.json({
+        return response.status(200).json({
             message: 'Login Berhasil',
-            token: token.value,
+            token: token.value!.release(),
             type: 'Bearer',
-            expires_in: token.expiresAt
+            expires_in: token.expiresAt,
+            user: user,
         })
 
     }
@@ -34,7 +38,7 @@ export default class UserAuthsController {
     async Logout({auth, response}: HttpContext){
         await auth.use('api').invalidateToken
 
-        return response.json({
+        return response.status(200).json({
             message: 'Logout Berhasil',
         })
     }

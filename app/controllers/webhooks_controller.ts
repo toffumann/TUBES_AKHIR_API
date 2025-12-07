@@ -5,17 +5,29 @@ export default class WebhookController {
   async midtrans({ request, response }: HttpContext) {
     const body = request.body()
 
-    const project = await Projects.query()
-      .where('orderId', body.order_id)
+    console.log(body)
+
+    if (!body.order_id) {
+      return response.badRequest({
+        message: "order_id tidak ditemukan dalam webhook"
+      })
+    }
+
+   const project = await Projects.query()
+     .where('orderId', body.order_id)
       .first()
 
-    if (!project) return response.ok({ message: 'Project Tidak Ditemukan' })
+    if (!project) {
+      return response.status(404).json({ 
+        message: 'Project Tidak Ditemukan' 
+      })
+   }
 
-    project.paymentStatus = body.transaction_status
+   project.paymentStatus = body.transaction_status
     await project.save()
 
-    return response.json({
+    return response.status(200).json({
        message: 'Updated' 
       })
-  }
+  } 
 }

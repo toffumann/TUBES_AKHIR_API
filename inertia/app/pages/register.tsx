@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { Head, Link } from '@inertiajs/react' // HAPUS useForm
-import { User, Mail, Lock, Palette, Briefcase } from 'lucide-react'
+import { useState, useEffect } from 'react' // ✅ Tambahkan useEffect
+import { Head, Link } from '@inertiajs/react'
+import { User, Mail, Lock, Palette, Briefcase, AlertCircle, CheckCircle } from 'lucide-react'
 
 export default function Register() {
   const [userType, setUserType] = useState<'client' | 'designer'>('client')
@@ -19,9 +19,24 @@ export default function Register() {
     general?: string
   }>({})
 
+  // ✅ State untuk real-time validation feedback
+  const [fullNameError, setFullNameError] = useState<string>('')
+  const [passwordError, setPasswordError] = useState<string>('')
+  const [fullNameTouched, setFullNameTouched] = useState(false)
+  const [passwordTouched, setPasswordTouched] = useState(false)
+
   // ✅ Handler functions
   const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFullName(e.target.value)
+    const value = e.target.value
+    setFullName(value)
+    setFullNameTouched(true)
+    
+    // Real-time validation
+    if (value.trim().length < 6) {
+      setFullNameError('Nama minimal 6 karakter')
+    } else {
+      setFullNameError('')
+    }
   }
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,7 +44,16 @@ export default function Register() {
   }
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value)
+    const value = e.target.value
+    setPassword(value)
+    setPasswordTouched(true)
+    
+    // Real-time validation
+    if (value.length < 6) {
+      setPasswordError('Password minimal 6 karakter')
+    } else {
+      setPasswordError('')
+    }
   }
 
   const handlePasswordConfirmationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,15 +64,43 @@ export default function Register() {
     setNomorTelepon(e.target.value)
   }
 
+  // ✅ Validasi sebelum submit
+  const validateForm = (): boolean => {
+    const newErrors: any = {}
+    
+    if (!fullName.trim()) {
+      newErrors.fullName = 'Nama lengkap wajib diisi'
+    } else if (fullName.trim().length < 6) {
+      newErrors.fullName = 'Nama minimal 6 karakter'
+    }
+    
+    if (!email.trim()) {
+      newErrors.email = 'Email wajib diisi'
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = 'Email tidak valid'
+    }
+    
+    if (!password) {
+      newErrors.password = 'Password wajib diisi'
+    } else if (password.length < 6) {
+      newErrors.password = 'Password minimal 6 karakter'
+    }
+    
+    if (password !== passwordConfirmation) {
+      newErrors.passwordConfirmation = 'Password tidak cocok'
+    }
+    
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
   // ✅ Submit function
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setProcessing(true)
-    setErrors({})
     
-    // Validasi password confirmation
-    if (password !== passwordConfirmation) {
-      setErrors({ passwordConfirmation: 'Password tidak cocok' })
+    // Validasi form sebelum submit
+    if (!validateForm()) {
       setProcessing(false)
       return
     }
@@ -62,8 +114,8 @@ export default function Register() {
           'Accept': 'application/json'
         },
         body: JSON.stringify({
-          fullName: fullName, // ✅ fullName BUKAN full_name
-          email: email,
+          fullName: fullName.trim(), // ✅ Pastikan trim sebelum dikirim
+          email: email.trim(),
           password: password,
           nomorTelepon: nomorTelepon || null
         })
@@ -90,6 +142,13 @@ export default function Register() {
     }
   }
 
+  // ✅ Cek apakah form valid
+  const isFormValid = 
+    fullName.trim().length >= 6 &&
+    /\S+@\S+\.\S+/.test(email) &&
+    password.length >= 6 &&
+    password === passwordConfirmation
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <Head title="Register - DesainHub" />
@@ -102,55 +161,37 @@ export default function Register() {
             </div>
             <h1 className="text-3xl font-bold text-gray-900">Buat Akun Baru</h1>
             <p className="text-gray-600 mt-2">Bergabung dengan komunitas desainer dan klien kami</p>
+            
+            {/* Info persyaratan */}
+            <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+              <div className="flex items-center">
+                <AlertCircle className="w-4 h-4 mr-2" />
+                <span>Nama lengkap minimal 6 karakter</span>
+              </div>
+            </div>
           </div>
 
           {/* User Type Selection */}
           <div className="mb-6">
             <p className="text-sm font-medium text-gray-700 mb-3">Saya ingin mendaftar sebagai:</p>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="flex">
               <button
                 type="button"
                 onClick={() => setUserType('client')}
                 className={`p-4 rounded-lg border-2 transition-colors ${
-                  userType === 'client'
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                  'border-blue-500 bg-blue-50'
                 }`}
               >
                 <div className="flex flex-col items-center">
-                  <Briefcase className={`h-6 w-6 mb-2 ${
-                    userType === 'client' ? 'text-blue-600' : 'text-gray-400'
-                  }`} />
-                  <span className={`font-medium ${
-                    userType === 'client' ? 'text-blue-600' : 'text-gray-700'
-                  }`}>
+                  <Briefcase className="h-6 w-6 mb-2 text-blue-600" />
+                  <span className="font-medium text-blue-600">
                     Klien
                   </span>
                   <span className="text-xs text-gray-500 mt-1">Mencari jasa desain</span>
                 </div>
               </button>
-              <button
-                type="button"
-                onClick={() => setUserType('designer')}
-                className={`p-4 rounded-lg border-2 transition-colors ${
-                  userType === 'designer'
-                    ? 'border-purple-500 bg-purple-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="flex flex-col items-center">
-                  <Palette className={`h-6 w-6 mb-2 ${
-                    userType === 'designer' ? 'text-purple-600' : 'text-gray-400'
-                  }`} />
-                  <span className={`font-medium ${
-                    userType === 'designer' ? 'text-purple-600' : 'text-gray-700'
-                  }`}>
-                    Desainer
-                  </span>
-                  <span className="text-xs text-gray-500 mt-1">Menawarkan jasa desain</span>
-                </div>
-              </button>
             </div>
+            <input type="hidden" name="user_type" value="client" />
           </div>
 
           {/* Error Message Global */}
@@ -163,22 +204,66 @@ export default function Register() {
           <form onSubmit={submit} className="space-y-4">
             {/* Full Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Nama Lengkap
-              </label>
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Nama Lengkap
+                </label>
+                <div className="text-xs text-gray-500 flex items-center">
+                  <span className={`mr-1 ${fullName.length >= 6 ? 'text-green-600' : 'text-gray-400'}`}>
+                    {fullName.length}/6
+                  </span>
+                  {fullName.length >= 6 ? (
+                    <CheckCircle className="w-3 h-3 text-green-600 ml-1" />
+                  ) : (
+                    <AlertCircle className="w-3 h-3 text-gray-400 ml-1" />
+                  )}
+                </div>
+              </div>
+              
               <div className="relative">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <input
                   type="text"
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="John Doe"
+                  className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                    fullNameError || errors.fullName
+                      ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+                      : fullName.length >= 6
+                      ? 'border-green-300 focus:ring-green-500 focus:border-green-500'
+                      : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                  }`}
+                  placeholder="John Doe (minimal 6 karakter)"
                   value={fullName}
                   onChange={handleFullNameChange}
+                  onBlur={() => setFullNameTouched(true)}
                   required
                 />
               </div>
-              {errors.fullName && (
+              
+              {/* Helper text */}
+              {!fullNameError && !errors.fullName && fullName.length > 0 && fullName.length < 6 && (
+                <div className="mt-1 flex items-center text-amber-600 text-xs">
+                  <AlertCircle className="w-3 h-3 mr-1" />
+                  Tambahkan {6 - fullName.length} karakter lagi
+                </div>
+              )}
+              
+              {/* Error messages */}
+              {fullNameError && (
+                <p className="mt-1 text-sm text-red-600 flex items-center">
+                  <AlertCircle className="w-4 h-4 mr-1" />
+                  {fullNameError}
+                </p>
+              )}
+              {errors.fullName && !fullNameError && (
                 <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>
+              )}
+              
+              {/* Info tambahan */}
+              {!fullNameError && !errors.fullName && fullName.length >= 6 && (
+                <div className="mt-1 flex items-center text-green-600 text-xs">
+                  <CheckCircle className="w-3 h-3 mr-1" />
+                  Nama sudah memenuhi syarat
+                </div>
               )}
             </div>
 
@@ -191,7 +276,11 @@ export default function Register() {
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <input
                   type="email"
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                    errors.email
+                      ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                  }`}
                   placeholder="nama@email.com"
                   value={email}
                   onChange={handleEmailChange}
@@ -224,23 +313,67 @@ export default function Register() {
 
             {/* Password */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Password
+                </label>
+                <div className="text-xs text-gray-500 flex items-center">
+                  <span className={`mr-1 ${password.length >= 6 ? 'text-green-600' : 'text-gray-400'}`}>
+                    {password.length}/6
+                  </span>
+                  {password.length >= 6 ? (
+                    <CheckCircle className="w-3 h-3 text-green-600 ml-1" />
+                  ) : (
+                    <AlertCircle className="w-3 h-3 text-gray-400 ml-1" />
+                  )}
+                </div>
+              </div>
+              
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <input
                   type="password"
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Minimal 8 karakter"
+                  className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                    passwordError || errors.password
+                      ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+                      : password.length >= 6
+                      ? 'border-green-300 focus:ring-green-500 focus:border-green-500'
+                      : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                  }`}
+                  placeholder="Minimal 6 karakter"
                   value={password}
                   onChange={handlePasswordChange}
+                  onBlur={() => setPasswordTouched(true)}
                   required
-                  minLength={8}
+                  minLength={6}
                 />
               </div>
-              {errors.password && (
+              
+              {/* Helper text */}
+              {!passwordError && !errors.password && password.length > 0 && password.length < 6 && (
+                <div className="mt-1 flex items-center text-amber-600 text-xs">
+                  <AlertCircle className="w-3 h-3 mr-1" />
+                  Tambahkan {6 - password.length} karakter lagi
+                </div>
+              )}
+              
+              {/* Error messages */}
+              {passwordError && (
+                <p className="mt-1 text-sm text-red-600 flex items-center">
+                  <AlertCircle className="w-4 h-4 mr-1" />
+                  {passwordError}
+                </p>
+              )}
+              {errors.password && !passwordError && (
                 <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+              )}
+              
+              {/* Info tambahan */}
+              {!passwordError && !errors.password && password.length >= 6 && (
+                <div className="mt-1 flex items-center text-green-600 text-xs">
+                  <CheckCircle className="w-3 h-3 mr-1" />
+                  Password sudah memenuhi syarat
+                </div>
               )}
             </div>
 
@@ -253,13 +386,34 @@ export default function Register() {
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <input
                   type="password"
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                    errors.passwordConfirmation
+                      ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+                      : passwordConfirmation && password === passwordConfirmation
+                      ? 'border-green-300 focus:ring-green-500 focus:border-green-500'
+                      : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                  }`}
                   placeholder="Ulangi password"
                   value={passwordConfirmation}
                   onChange={handlePasswordConfirmationChange}
                   required
                 />
               </div>
+              
+              {passwordConfirmation && password !== passwordConfirmation && (
+                <div className="mt-1 flex items-center text-red-600 text-xs">
+                  <AlertCircle className="w-3 h-3 mr-1" />
+                  Password tidak cocok
+                </div>
+              )}
+              
+              {passwordConfirmation && password === passwordConfirmation && (
+                <div className="mt-1 flex items-center text-green-600 text-xs">
+                  <CheckCircle className="w-3 h-3 mr-1" />
+                  Password cocok
+                </div>
+              )}
+              
               {errors.passwordConfirmation && (
                 <p className="mt-1 text-sm text-red-600">{errors.passwordConfirmation}</p>
               )}
@@ -288,8 +442,12 @@ export default function Register() {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={processing}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium mt-6"
+              disabled={processing || !isFormValid}
+              className={`w-full bg-gradient-to-r text-white py-3 px-4 rounded-lg focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium mt-6 ${
+                isFormValid
+                  ? 'from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:ring-blue-500'
+                  : 'from-gray-400 to-gray-500 cursor-not-allowed'
+              }`}
             >
               {processing ? 'Mendaftarkan...' : 'Daftar Sekarang'}
             </button>
