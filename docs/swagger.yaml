@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
-  title: API Tugas Akhir
+  title: AnoCode
   version: 1.0.0
-  description: Dokumentasi API proyek Tugas Akhir
+  description: Dokumentasi lengkap API aplikasi AnoCode menggunakan openapi versi 3.0(swagger)
 servers:
   - url: http://localhost:3333
 components:
@@ -20,6 +20,10 @@ components:
         fullName:
           type: string
         email:
+          type: string
+        nomorTelepon:
+          type: string
+        avatarUrl:
           type: string
     Service:
       type: object
@@ -376,3 +380,63 @@ paths:
                 properties:
                   message:
                     type: string
+
+  # ===== GOOGLE AUTH =====
+  /auth/google:
+    get:
+      summary: Redirect user ke Google OAuth
+      tags:
+        - GoogleAuth
+      responses:
+        '302':
+          description: Redirect ke Google login
+
+  /auth/google/callback:
+    get:
+      summary: Callback Google OAuth
+      tags:
+        - GoogleAuth
+      responses:
+        '302':
+          description: Redirect ke frontend dengan token jika berhasil, atau ke /login jika error
+
+  /auth/google/success:
+    get:
+      summary: Halaman sukses login Google OAuth
+      tags:
+        - GoogleAuth
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: user
+          in: query
+          required: false
+          schema:
+            type: string
+            description: JSON string user info
+      responses:
+        '200':
+          description: Menampilkan halaman sukses login Google
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      fullName:
+                        type: string
+                      email:
+                        type: string
+                      nomorTelepon:
+                        type: string
+                      avatarUrl:
+                        type: string

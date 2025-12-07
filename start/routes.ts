@@ -16,7 +16,7 @@ import PaymentController from '#controllers/payments_controller'
 import ProjectController from '#controllers/projects_controller'
 import WebhookController from '#controllers/webhooks_controller'
 import UserDashboardsController from '#controllers/user_dashboards_controller'
-
+import GoogleAuthController from '#controllers/google_auths_controller'
 
 // ===== PUBLIC ROUTES =====
 // API Routes
@@ -65,3 +65,8 @@ router.get('/dashboard', async ({ inertia }) => {
 router.get('/profile', async ({ inertia }) => {
   return inertia.render('Profile')
 }).use(middleware.auth())
+
+
+router.get('/auth/google', [GoogleAuthController, 'redirect'])
+router.get('/auth/google/callback', [GoogleAuthController, 'callback'])
+router.get('/auth/google/success', [GoogleAuthController, 'success'])
