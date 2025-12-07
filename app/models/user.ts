@@ -28,6 +28,12 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare nomorTelepon: string | null
 
+    @column()
+  declare googleId: string | null
+
+  @column()
+  declare avatarUrl: string | null
+
   @hasMany(() => Projects, { foreignKey: 'id_user' })
   declare projects: HasMany<typeof Projects>
 

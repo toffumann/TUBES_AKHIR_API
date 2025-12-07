@@ -14,7 +14,7 @@ import { middleware } from './kernel.js'
 import UserController from '#controllers/users_controller'
 import PaymentController from '#controllers/payments_controller'
 import ProjectController from '#controllers/projects_controller'
-
+import GoogleAuthController from '#controllers/google_auths_controller'
 // ===== PUBLIC ROUTES =====
 // API Routes
 router.post('/register', [UserAuthsController, 'Register'])
@@ -49,3 +49,7 @@ router.get('/profile', async ({ inertia }) => {
 router.get('/me', [UserController, 'me']).use(middleware.auth())
 
 router.get('/service/product', [ServicesController, 'index']).use(middleware.auth())
+
+router.get('/auth/google', [GoogleAuthController, 'redirect'])
+router.get('/auth/google/callback', [GoogleAuthController, 'callback'])
+router.get('/auth/google/success', [GoogleAuthController, 'success'])
