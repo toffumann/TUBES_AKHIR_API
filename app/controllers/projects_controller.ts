@@ -5,7 +5,7 @@ import { DateTime } from 'luxon'
 export default class ProjectController {
 async store({ request, auth, response }: HttpContext) {
   
-    await auth.authenticate()
+    await auth.use('api').authenticate()
 
     const data = request.only(['service_id', 'catatan_user'])
 
@@ -17,7 +17,7 @@ async store({ request, auth, response }: HttpContext) {
       deadline: DateTime.now(),
     })
 
-    return response.created({
+    return response.status(201).json({
       message: 'Project berhasil dibuat',
       data: project,
     })

@@ -8,7 +8,7 @@ export default class GoogleAuthController {
     return ally.use('google').redirect()
   }
 
-  async callback({ ally, response }: HttpContext) {
+  async callback({ ally, response,auth }: HttpContext) {
     try {
       const google = ally.use('google')
       
@@ -64,9 +64,7 @@ export default class GoogleAuthController {
       }
       
       // Generate access token (sama seperti login biasa)
-      const token = await User.accessTokens.create(user, ['*'], {
-        expiresIn: '3 hours',
-      })
+      const token = await auth.use('api').createToken(user)
       
       // Redirect ke frontend dengan token di query parameter
       return response.redirect(`/auth/google/success?token=${token.value}&user=${encodeURIComponent(JSON.stringify({

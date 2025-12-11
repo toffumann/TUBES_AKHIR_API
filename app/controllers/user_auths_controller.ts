@@ -18,25 +18,35 @@ export default class UserAuthsController {
         })
     }
 
-    async Login({request, response}: HttpContext){
+    async Login({request, response, auth}: HttpContext){
         const payload = await loginValidator.validate(request.all())
         const user = await User.verifyCredentials(payload.email, payload.password)
-        const token = await User.accessTokens.create(user, ['*'],{
-            expiresIn: '3hours',
-        })
 
-        return response.status(200).json({
+        const token = await auth.use('api').createToken(user)
+
+       response.cookie('token', token.value, {
+            httpOnly: true,
+            secure: false, // ubah true di production
+            sameSite: 'lax',
+            path: '/',
+            maxAge: 60 * 60 * 24 * 7, // 7 hari
+       })
+
+       return response.status(200).json({
             message: 'Login Berhasil',
-            token: token.value!.release(),
-            type: 'Bearer',
-            expires_in: token.expiresAt,
-            user: user,
-        })
+            user,
+       })
 
     }
 
     async Logout({auth, response}: HttpContext){
-        await auth.use('api').invalidateToken
+        try {
+            await auth.use('api').invalidateToken
+        } catch (error){
+
+        }
+
+        response.clearCookie('token')
 
         return response.status(200).json({
             message: 'Logout Berhasil',

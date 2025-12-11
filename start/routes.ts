@@ -17,17 +17,26 @@ import ProjectController from '#controllers/projects_controller'
 import WebhookController from '#controllers/webhooks_controller'
 import UserDashboardsController from '#controllers/user_dashboards_controller'
 import GoogleAuthController from '#controllers/google_auths_controller'
+import { resolveEnvPrefix } from 'vite'
 
 // ===== PUBLIC ROUTES =====
 // API Routes
-router.post('/register', [UserAuthsController, 'Register'])
-router.post('/login', [UserAuthsController, 'Login'])
-router.post('/logout', [UserAuthsController, 'Logout'])
 
-router.post('/payment/:id', [PaymentController, 'create'])
-router.post('/midtrans/webhook', [WebhookController, 'midtrans'])
+router.group(() => {
+  router.post('/logout', [UserAuthsController, 'Logout'])
+  router.post('/payment/:id', [PaymentController, 'create'])
+  router.post('/midtrans/webhook', [WebhookController, 'midtrans'])
+  router.post('/project', [ProjectController, 'store'])
+}).prefix('/api/v1').use(middleware.auth())
 
-router.post('/project', [ProjectController, 'store'])
+router.group(() => {
+  router.post('/register', [UserAuthsController, 'Register'])
+  router.post('/login', [UserAuthsController, 'Login'])
+}).prefix('/api/v1')
+
+router.group(() => {
+  
+}).prefix('/api/v1')
 
 // ini yang akan di tampilkan ke user
 router.get('/service/product', [ServicesController, 'index']).use(middleware.auth())

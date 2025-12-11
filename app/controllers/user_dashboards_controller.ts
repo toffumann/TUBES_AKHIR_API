@@ -53,7 +53,7 @@ export default class UserDashboardsController {
   }
 
   async index({ auth, response }: HttpContext) {
-    await auth.authenticate()
+    await auth.use('api').authenticate()
 
     const projects = await Projects
       .query()
