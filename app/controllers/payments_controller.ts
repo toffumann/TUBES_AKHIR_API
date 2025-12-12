@@ -4,7 +4,7 @@ import Projects from '#models/projects'
 
 export default class PaymentController {
   async create({ params, auth, response }: HttpContext) {
-    await auth.authenticate()
+    await auth.use('api').authenticate()
 
     const project = await Projects.query()
       .where('id', params.id)
